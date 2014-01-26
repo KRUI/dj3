@@ -1,0 +1,104 @@
+from django.shortcuts import render, redirect, get_object_or_404
+from django.utils import timezone
+from django.http import HttpResponse, HttpResponseRedirect
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
+from django.template import RequestContext
+from django.core.urlresolvers import reverse
+from dj3.models import UserProfile, Track, Program, Spot
+
+### Login/Authentication Views
+
+# Displays the login form
+def login_form(request):
+	return render(request, 'dj3/login.html')
+
+def process_login(request):
+	# Retrieve user/pass submission via POST
+	user_input = request.POST['username']
+	password_input = request.POST['password']
+	
+	# If username/password are blank, display an error message
+	if not (user_input or password_input):
+		error_message = "You must enter both a username and a password."
+		return HttpResponse(error_message)
+
+	else:
+		# Attempt to authenticate with these credentials
+		user = authenticate(username=user_input, password=password_input)
+
+		# If we were given valid creds, log the user into the Django auth framework
+		if user is not None:
+			login(request, user)
+			
+			# Redirect to the main site (playlist for now)
+			return redirect('/dj3/playlist')
+		
+		else:
+			# Throw an invalid login error
+			error_message = "Invalid login credentials"
+			return HttpResponse(error_message)
+
+def logout_user(request):
+	logout(request)				# Recursion depth exceeded... it's getting late
+	return redirect('/dj3/')
+
+### Playlist & Song Logging Views
+
+# Basic playlist display view
+@login_required
+def playlist(request):
+	# Get the user's last ten played tracks if they exist
+	profile = request.user.get_profile()
+	track_list = Track.objects.filter(user_profile=profile).order_by('-id')[:10]
+	
+	return render(request, 'dj3/playlist.html', {'track_list': track_list, 'profile': profile})
+
+# Processes a new song log entry
+def process_track(request):
+	# Retrieve passed track information 
+	name_input = request.POST['track']
+	artist_input = request.POST['artist']
+	album_input = request.POST['album']
+
+	# Check if all three input values were filled in
+	if not (name_input and artist_input and album_input):
+		# Display an error message on previous page
+		return render(request, 'dj3/playlist.html', {'error_message': "You must provide a song name, artist name, and album name before logging a song."})
+		
+	else:
+		# Get the profile of the current user
+		profile = request.user.get_profile()
+
+		# Create a new Track and write it to the database
+		t = Track(name=name_input, artist=artist_input, album=album_input, comment="implement comments!", rotation=2, user_profile=profile)
+		t.save()
+
+		# Direct us back to the playlist
+		return HttpResponseRedirect(reverse('dj3:playlist'))
+
+def process_spot(request, spot_id):
+	# If spot_id is non-existent or not in the field of allowed values, throw an error.
+	if (spot_id > 3 and spot_id < 0):
+		return HttpResponse("Spot ID is invalid.")
+	
+	# Retrieve user profile
+	profile = request.user.get_profile()
+
+	# Create a new spot 
+	s = Spot(user_profile=profile, time_played=timezone.now(), spot_type=spot_id)
+	s.save()
+	
+	# Redirect to playlist view
+	return HttpResponseRedirect(reverse('dj3:playlist'))
+
+# Shows a dynamically generated director contact info page, based on the information in the UserProfiles assigned to Director roles
+def show_contact_info(request):
+
+	# Get the profiles of all directors
+	director_list = UserProfile.objects.exclude(role__isnull=True)
+
+	# Render template using director list as a context
+	render(request, 'dj3/director_contact.html', {'director_list': director_list})
+

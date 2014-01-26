@@ -1,0 +1,48 @@
+{% extends "dj3/base.html" %}
+{% block browser_title %}Contact A Director{% endblock %}
+
+{% block content %}
+
+{% if contact_list %}
+
+	{% for c in contact_list %}
+		<div class="row">
+			<div class="col-md-12">
+				<h2 style="text-align:center">{{ c.title }}</h2>
+				{% if c.user_profile %}
+				<h3 style="text-align:center">{{ c.user_profile.user.first_name }} {{ c.user_profile.user.last_name }}</h3>
+				{% if c.description %}
+					<p>{{ c.description }}</p>
+				{% endif %}
+				<ul>
+					{% if c.on_call %}
+						<li><strong>On Call 24/7</strong></li>
+					{% endif %}	
+					<li>Email:
+					{% if c.user_profile.user.email %}
+					<a href='mailto:{{ c.user_profile.user.email }}'>{{ c.user_profile.user.email }}</a>
+					{% else %}
+						<strong>No Email On File</strong>
+					{% endif %}
+					</li>
+
+					<li>Phone: 
+					{% if c.user_profile.phone %} 
+						{{ c.user_profile.formatted_phone }}
+					{% else %}
+						<strong>No Phone On File</strong>
+					{% endif %}
+					</li>
+				</ul>
+
+				{% endif %}
+							</div>
+		</div>
+	{% endfor %}
+
+{% else %}
+No contacts found.
+{% endif %}
+	</div>
+</div>
+{% endblock %}

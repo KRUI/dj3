@@ -1,0 +1,118 @@
+{% extends "dj3/base.html" %}
+{% block browser_title %} 
+Playlist
+{% endblock %}
+
+{% block content %}
+
+<!-- Any errors will be reported here -->
+{% if error_message %}
+<div class="row">
+		<div class="col-md-12">	
+			<div class="alert alert-danger alert-dismissable">
+				<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+				{{ error_message }}
+			</div>
+		</div>
+	</div>
+{% endif %}
+
+
+<!-- Song Logging Panel  -->
+<div class="row">
+	<div class="col-md-12">
+
+		<div class="panel panel-primary">
+			<div class="panel-heading"><h3 class="panel-title">Log A New Song</h3></div>
+
+			<div class="panel-body">	
+				<form class="form-inline" role="form" action="process_track/" method="post">
+				{% csrf_token %}
+				<div class="form-group" style="width:28%"><input type="text" class="form-control" id="track" name="track" placeholder="Song Name"></div>
+				<div class="form-group" style="width:28%"><input type="text" class="form-control" id="artist" name="artist" placeholder="Artist Name"></div>
+				<div class="form-group" style="width:28%"><input type="text" class="form-control" id="album" name="album" placeholder="Album Name"></div>
+				<button type="submit" class="btn btn-primary" style="width:15%">Submit</button>						
+				</form>
+			</div>
+		</div>
+
+	</div>
+</div>
+
+<!-- Spot Panel -->
+<div class="row">
+	<div class="col-md-12">
+
+		<div class="panel panel-primary">
+			<div class="panel-heading"><h3 class="panel-title">Log A Spot</h3></div>
+				<div class="panel-body">	
+				
+				<div class="row">
+					<div class="col-md-3">
+						<form class="form-inline" role="form" action="process_spot/0/" method="post">
+							{% csrf_token %}
+							<button type="submit" class="btn btn-info" style="width:100%">Legal ID</button>						
+						</form>
+					</div>
+
+					<div class="col-md-3">
+						<form class="form-inline" role="form" action="process_spot/1/" method="post">
+							{% csrf_token %}
+							<button type="submit" class="btn btn-info" style="width:100%">PSA</button>						
+						</form>
+					</div>
+
+					<div class="col-md-3">
+						<form class="form-inline" role="form" action="process_spot/2/" method="post">
+							{% csrf_token %}
+							<button type="submit" class="btn btn-info" style="width:100%">Weather</button>						
+						</form>
+					</div>
+
+					<div class="col-md-3">
+						<form class="form-inline" role="form" action="process_spot/3/" method="post">
+							{% csrf_token %}
+							<button type="submit" class="btn btn-info" style="width:100%">Grant Spot</button>						
+						</form>
+					</div>
+				</div>
+		</div>
+	</div>
+</div>
+
+
+
+<!-- Table of Logged Songs -->
+
+<div class="row">
+	<div class="col-md-12">
+	<div class="panel panel-primary">
+		<div class="panel-heading"><h3 class="panel-title">Your Track Log</h3></div>
+
+		{% if track_list %}
+		<table class="table">
+			<tr>
+				<th id="track">Track Name</th>
+				<th id="artist">Artist</th>
+				<th id="album">Album</th>
+				<th id="comment">Comment</th>
+			</tr>
+			{% for track in track_list %}	
+			<tr>
+				<td>{{track.name}}</td>
+				<td>{{track.artist}}</td>
+				<td>{{track.album}}</td>
+				<td>{{track.comment}}</td>
+			</tr>
+			{% endfor %}
+				</table>
+		
+		{% else %}
+		<div class="panel-body">	
+			<div class="alert alert-warning"><strong>You haven't played anything! </strong>You should fix that.</div>
+		</div>
+		{% endif %}	
+	</div>
+</div>
+
+{% endblock %}

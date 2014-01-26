@@ -1,0 +1,81 @@
+{% extends "dj3/base.html" %}
+{% block browser_title %}Sub Request{% endblock %}
+{% block page_title %}Create New Sub Request{% endblock %}
+
+{% block content %}
+
+<form class="form-horizontal" role="form" action="process_sub_request/?cat={{ program.category }}&start_time={{ program.start_time }}" method="POST">
+	{% csrf_token %}	
+	<h2 style="text-align:center">Personal Information</h2><br>
+
+	<div class="form-group">
+		<label for="inputName" class="col-sm-2 control-label">Name</label>
+		<div class="col-md-10">
+			<input type="text" class="form-control" id="name" name="name" value='{{ user.get_full_name }}' {% if user.get_full_name %}   {% endif %}>
+		</div>
+	</div>
+
+	<div class="form-group">
+		<label for="inputEmail" class="col-sm-2 control-label">Email</label>
+		<div class="col-md-10">
+			<input type="email" class="form-control" id="email" name="email" value='{{ user.email }}'> 
+		</div>
+	</div>
+
+	<h2 style="text-align:center">Show Information</h2><br>
+
+	<div class="form-group">
+		<label for="inputShow" class="col-sm-2 control-label">Name Of Show</label>
+		<div class="col-md-10">
+				<input type="text" class="form-control" id="show_name" name="show_name" value='{{ program.name }}' {% if program.name %}   {% endif %}>	
+		</div>
+	</div>
+	
+	<div class="form-group">
+	<label for="inputShow" class="col-sm-2 control-label">Format</label>
+		<div class="col-md-4">
+			<input type="text" class="form-control" id="format" name="format" value='{{ category_text }}' {% if category_text %}   {% endif %}>
+		</div>
+		<label for="inputShow" class="col-sm-2 control-label">Starting/Ending Time</label>
+		<div class="col-md-2">
+			<input type="time" class="form-control" id="start_time" name="start_time" value='{{ program.start_time_raw }}'>
+		</div>
+		<div class="col-md-2">
+			<input type="datetime" class="form-control" id="end_time" name="end_time" value='{{ program.end_time_raw }}'>
+		</div>
+
+	</div>
+
+	<h2 style="text-align:center">Request Details</h2><br>
+
+	<div class="form-group">
+	<label for="inputDetails" class="col-sm-4 control-label">Date You Will Be Absent</label>
+		<div class="col-md-6">
+			<input type="date" class="form-control" id="absent_date" name="absent_date" value=''>
+			<span class="help-block">Please format using MM-DD-YYYY structure. Ex: 05-14-2014 (May 14th, 2014) <strong>HEY YOU NEED TO PUT A DATEPICKER HERE WITH A DISABLED FIELD. IT WILL PREVENT LOTS OF PROBLEMS</strong></span>
+		</div>
+	</div>
+
+	<div class="form-group">
+	<label for="inputDetails" class="col-sm-4 control-label">Show-specific Details</label>
+		<div class="col-md-6">
+		<textarea class="form-control" rows="6" name="show_details"></textarea>
+			<span class="help-block">Include anything the person filling the request should know about the show. It is common to include the type of show, genre of music played, etc. This will be included exactly as written in the sub request notice that will be sent out.</span>
+		</div>
+	</div>
+
+	<div class="form-group">
+	<label for="inputDetails" class="col-sm-4 control-label">Reason for Absence</label>
+		<div class="col-md-6">
+		<textarea class="form-control" rows="6" name="show_details"></textarea>
+			<span class="help-block">Please provide the reason you will be missing your show. This will <strong>not</strong> be shared with anyone but the 89.7 Program Director.</span>
+		</div>
+	</div>
+	<div class="form-actions" style="margin:0;background-color:transparent;text-align:center;">
+		<button type="submit" class="btn btn-primary btn-lg">Create Sub Request</button>
+	</div>
+
+</form>
+
+
+{% endblock %}

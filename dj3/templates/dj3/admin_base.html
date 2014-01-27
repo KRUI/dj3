@@ -49,14 +49,39 @@
 					GM, PD can view Programming section
 				{% endcomment %}
 				{% if user.get_profile.role == 1 or user.get_profile.role == 2 %}
-					<li><a href='{% url 'dj3:m_programming' %}'>Programming</a></li>
+				
+				<li class="dropdown">
+              		<a href="#" class="dropdown-toggle" data-toggle="dropdown">Programming<b class="caret"></b></a>
+              		<ul class="dropdown-menu">
+                		<li><a href="#">Schedule Programming</a></li>
+						<li class="divider"></li>
+						<li class="dropdown-header">Reports</li>
+						<li><a href="#">Attendance Reports</a></li>
+						<li><a href='{% url 'dj3:new_sub_request' %}'>Sub Request Reports</a></li>
+              		</ul>
+				</li>
+	
+			
+			
 				{% endif %}
 				{% comment %}
 					GM, IT, Ops can view/modify user section
 				{% endcomment %}
 				{% if user.get_profile.role == 1 or user.get_profile.role == 4 or user.get_profile.role == 5 %}
-					<li><a href='{% url 'dj3:m_users' %}'>Users</a></li>
-				{% endif %}
+					<li class="dropdown">
+              		<a href="#" class="dropdown-toggle" data-toggle="dropdown">Users<b class="caret"></b></a>
+              		<ul class="dropdown-menu">
+						<li><a href="#">User List</a></li>
+						<li><a href="#">Modify Contact Information</a></li>
+						<li class="divider"></li>
+						<li class="dropdown-header">Reports</li>
+						<li><a href="#">Inactive User Report</a></li>
+              		</ul>
+				</li>
+
+					
+					
+					{% endif %}
 	      </ul>
           <ul class="nav navbar-nav navbar-right">
             <li class="dropdown">
@@ -69,7 +94,7 @@
 				<li><a href='{% url 'dj3:new_sub_request' %}'>Create Sub Request</a></li>
               </ul>
 			</li>
-			<li><a href='{% url 'dj3:logout' %}'>Logout</a></li>
+			<li><a href='{% url 'dj3:playlist' %}'>Back To DJ3</a></li>
           </ul>
         </div><!--/.nav-collapse -->
       </div>

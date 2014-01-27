@@ -7,6 +7,9 @@ urlpatterns = patterns('',
 	url(r'^process_login/$', views.process_login, name='process_login'),
 	url(r'^logout/$', views.logout_user, name='logout'),
 	
+	# User Profile URLs
+	url(r'edit_profile/$', views.edit_user_profile, name='edit_user_profile'),
+
 	# Management URLs
 	url(r'^manage/$', views.management_panel, name='manage'),
 	url(r'^manage/users/$', views.manage_users, name='m_users'),

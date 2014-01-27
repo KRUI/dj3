@@ -1,0 +1,120 @@
+{% extends "dj3/base.html" %}
+{% block browser_title %}Edit Profile{% endblock %}
+{% block page_title %}Edit Profile{% endblock %}
+
+{% block content %}
+	
+	{% if error_message %}
+		<div class="row">
+			<div class="col-md-12">
+				<div class="alert alert-danger"><strong>Error! </strong>{{ error_message }}</div>
+			</div>
+		</div>
+	{% endif %}
+
+	{% if new_user %}
+	<p>Hey there! Before you get started, we'll need a few pieces of information from you. Please fill out the following form to complete your registration.</p><br>
+	{% endif %}
+	<h4 style="text-align:center">Personal Information</h4>
+	<form class="form-horizontal" role="form" action="{% url 'dj3:edit_user_profile' %}{% if new_user %}?new_user=1{% endif %}&process=1" method="POST">
+		{% csrf_token %}
+		<div class="form-group">
+			<label for="inputShow" class="col-sm-2 control-label">Name</label>
+			<div class="col-md-4">
+				<input type="text" class="form-control" id="start_time" name="first_name" placeholder="First">
+			</div>
+			<div class="col-md-4">
+			<input type="text" class="form-control" id="end_time" name="last_name" placeholder="Last">
+			</div>
+		</div>
+
+		<div class="form-group">
+			<label for="inputEmail" class="col-sm-2 control-label">Email</label>
+			<div class="col-md-8">
+				<input type="text" class="form-control" id="email" name="email">
+				<span class="help-block">We will send all official KRUI correspondence to this address. You are responsible for checking it reguarly, so use one you normally read.</span>
+			</div>
+		</div>
+
+
+
+		<div class="form-group">
+			<label for="inputPhone" class="col-sm-2 control-label">Phone</label>
+			<div class="col-md-4">
+				<input type="text" class="form-control" id="phone" name="phone">
+				<span class="help-block">Please, no dashes, spaces, or parenthesis! Ex: 3193358970</span>
+			</div>
+		</div>
+
+		<div class="form-group">
+			<label for="inputStudentID" class="col-sm-2 control-label">Student ID #</label>
+			<div class="col-md-4">
+				<input type="text" class="form-control" id="studentID" name="student_id" placeholder="12345678">
+			</div>
+						<div class="col-md-offset-2 col-md-10">
+				<div class="checkbox">
+					<input type="checkbox" name="no_id_checkbox"> I do not have a Student ID
+				</div>
+			</div>
+		</div>
+
+		<div class="form-group">
+			<label for="inputStudentID" class="col-sm-2 control-label">Academic Status</label>
+			<div class="col-md-4">
+				<select class="form-control" name='academic_status'>
+					<option value=-1>Select your academic status...</option>
+					{% for a in academic_status_list %}
+						<option value={{a.0}}>{{a.1}}</option>
+					{% endfor %}
+				</select>
+			</div>
+		</div>
+		<br>
+		<h4 style="text-align:center">Local Address</h4>
+		<p>If you are not a student (or cannot provide a Student ID), the University of Iowa requires us to have your local address on file. You may leave the following fields blank if you are a student.</p>
+		<div class="form-group">
+			<label for="inputAddress" class="col-sm-2 control-label">Address</label>
+			<div class="col-md-10">
+				<input type="text" class="form-control" id="address_line_1" name="address_line_1">
+			</div>
+		</div>
+
+		<div class="form-group">
+			<label for="inputAddress2" class="col-sm-2 control-label">Address (Line 2)</label>
+			<div class="col-md-10">
+				<input type="text" class="form-control" id="address_line_2" name="address_line_2">
+			</div>
+		</div>
+
+		<div class="form-group">
+			<label for="inputCity" class="col-sm-2 control-label">City</label>
+			<div class="col-md-3">
+				<input type="text" class="form-control" id="city" name="city">
+			</div>
+
+			<label for="inputState" class="col-sm-1 control-label">State</label>
+			<div class="col-md-2">
+				<input type="text" class="form-control" id="state" name="state" value="IA">
+			</div>
+
+			<label for="inputZipcode" class="col-sm-1 control-label">Zipcode</label>
+			<div class="col-md-3">
+				<input type="text" class="form-control" id="zipcode" name="zipcode">
+			</div>
+
+		</div>
+		<div class="form-actions" style="margin:0;background-color:transparent;text-align:center;">	
+			<p><button type="submit" class="btn btn-primary btn-lg">
+				{% if new_user %}
+					Save and Continue
+				{% else %}
+					Update Profile
+				{% endif %}	
+				</button></p>
+		</div>
+	</form>
+
+
+
+
+{% endblock %}

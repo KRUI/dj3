@@ -46,6 +46,52 @@ def logout_user(request):
 	logout(request)				# Recursion depth exceeded... it's getting late
 	return redirect('/dj3/')
 
+### User Profile Views
+def edit_user_profile(request):
+	# Check if this is being accessed directly after registration.
+	process = request.GET.get('process', False)
+	new_user_check = request.GET['new_user']
+	error = False
+
+	## Processing if GET 'process' is set
+	if (process):
+		# Check "student" fields
+		first_name = request.POST['first_name']
+		last_name = request.POST['last_name']
+		email = request.POST['email']
+		phone = request.POST['phone']
+		student_id = request.POST['student_id']
+		academic_status = request.POST['academic_status']
+
+		if not first_name or last_name or email or phone or student_id:
+			error = True
+			error_message = "You must fill out all required fields."
+
+		# Ensure academic status is filled 
+		if (not academic_status):
+			error = True
+			error_message = "You must select an academic status."
+
+	if (not error):
+		# Render the template with the check for new users (which will display a welcome message and a few additional details) and the list of valid academic statuses a user can select	
+		return render(request, 'dj3/edit_user_profile.html', {'new_user': new_user_check, 'academic_status_list': UserProfile.ACADEMIC_STATUS_CHOICES})
+	else:	
+		# Render the template with the error_message displayed.
+		return render(request, 'dj3/edit_user_profile.html', {'new_user': new_user_check, 'academic_status_list': UserProfile.ACADEMIC_STATUS_CHOICES, 'error_message': error_message})
+
+def process_user_profile(request):
+	# If this is a new user, resend this GET variable if we need to re-render the previous page
+	new_user = request.GET['new_user']
+	
+	# Validate name fields
+	first_name = request.POST['first_name']
+	last_name = request.POST['last_name']
+	
+	if (not first_name or last_name):
+		error = "You must enter your first and last name."
+		return render(request, 'dj3/edit_user_profile.html', {'new_user': new_user, 'adademic_status_list': UserProfile.ACADEMIC_STATUS_CHOICES})
+
+
 ### Playlist & Song Logging Views
 
 # Basic playlist display view

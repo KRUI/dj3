@@ -62,22 +62,67 @@ def edit_user_profile(request):
 		phone = request.POST['phone']
 		student_id = request.POST['student_id']
 		academic_status = request.POST['academic_status']
+		no_id_checkbox = request.POST.get('no_id_checkbox', False)		
 
-		if not first_name or last_name or email or phone or student_id:
+		if not(first_name or last_name or email or phone or student_id):
 			error = True
 			error_message = "You must fill out all required fields."
 
-		# Ensure academic status is filled 
-		if (not academic_status):
+		# Ensure academic status is set (default select value is -1)
+		if (not error) and (int(academic_status) == -1):
 			error = True
-			error_message = "You must select an academic status."
+			error_message = "You must select an academic status (student or non-student)."
 
-	if (not error):
-		# Render the template with the check for new users (which will display a welcome message and a few additional details) and the list of valid academic statuses a user can select	
+		# Ensure phone number field consists of only numbers
+		if (not error) and not (phone.isdigit()):
+			error = True
+			error_message = "Phone number field can only contain digits (no dashes or parentheses)."
+		
+		# Ensure student ID number consists of only numbers
+		if (not error) and not (student_id.isdigit()):
+			error = True
+			error_message = "Student ID field can only contain digits."
+
+		# If no student ID is passed, OR the user's status is changed to non-student, we must validate the local address portion of the submission
+		if (not error) and (no_id_checkbox or int(academic_status) == UserProfile.NON_STUDENT):
+			## Validate local address (ensure all fields are filled)
+			address_1 = request.POST['address_line_1']
+			address_2 = request.POST['address_line_2']
+			city = request.POST['city']
+			state = request.POST['state']
+			zipcode = request.POST['zipcode']
+
+			if (not error) and not(address_1 or city or state or zipcode):
+				error = True
+				error_message = "Since you did not provide a Student ID (or designated yourself as a non-student), you must provide a local address. The only optional field is the second address line."
+
+			if (not error) and (state.len != 2):
+				error = True
+				error_message = "State must be abbreviated (ex: IA for Iowa)."
+
+		if (not error):
+		# After validation, make the requested changes to the logged in user/profile.
+			user = request.user
+			user_profile = user.get_profile()
+			user.first_name = first_name
+			user.last_name = last_name
+			user.email = email
+			user_profile.academic_status = academic_status
+			user_profile.student_id = student_id
+			user_profile.phone = phone
+			user_profile.save()
+			user.save()
+		
+			# Render the template with a confirmation that changes were saved
+			return render(request, 'dj3/edit_user_profile.html', {'new_user': new_user_check, 'academic_status_list': UserProfile.ACADEMIC_STATUS_CHOICES})
+		else:
+
+			# Render the template with the error_message displayed.
+			return render(request, 'dj3/edit_user_profile.html', {'new_user': new_user_check, 'academic_status_list': UserProfile.ACADEMIC_STATUS_CHOICES, 'error_message': error_message})
+	
+	else:
+		# If we aren't processing, just display the template as normal
 		return render(request, 'dj3/edit_user_profile.html', {'new_user': new_user_check, 'academic_status_list': UserProfile.ACADEMIC_STATUS_CHOICES})
-	else:	
-		# Render the template with the error_message displayed.
-		return render(request, 'dj3/edit_user_profile.html', {'new_user': new_user_check, 'academic_status_list': UserProfile.ACADEMIC_STATUS_CHOICES, 'error_message': error_message})
 
 def process_user_profile(request):
 	# If this is a new user, resend this GET variable if we need to re-render the previous page

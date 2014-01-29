@@ -10,7 +10,16 @@
 				<div class="alert alert-danger"><strong>Error! </strong>{{ error_message }}</div>
 			</div>
 		</div>
-	{% endif %}
+		{% endif %}
+
+	{% if success_message %}
+		<div class="row">
+			<div class="col-md-12">
+				<div class="alert alert-success"><strong>Success! </strong>{{ success_message }}</div>
+			</div>
+		</div>
+		{% endif %}
+
 
 	{% if new_user %}
 	<p>Hey there! Before you get started, we'll need a few pieces of information from you. Please fill out the following form to complete your registration.</p><br>
@@ -21,17 +30,17 @@
 		<div class="form-group">
 			<label for="inputShow" class="col-sm-2 control-label">Name</label>
 			<div class="col-md-4">
-				<input type="text" class="form-control" id="start_time" name="first_name" placeholder="First">
+				<input type="text" class="form-control" id="start_time" name="first_name" placeholder="First" value="{{ user.first_name }}">
 			</div>
 			<div class="col-md-4">
-			<input type="text" class="form-control" id="end_time" name="last_name" placeholder="Last">
+				<input type="text" class="form-control" id="end_time" name="last_name" placeholder="Last" value="{{ user.last_name }}">
 			</div>
 		</div>
 
 		<div class="form-group">
 			<label for="inputEmail" class="col-sm-2 control-label">Email</label>
 			<div class="col-md-8">
-				<input type="text" class="form-control" id="email" name="email">
+				<input type="text" class="form-control" id="email" name="email" value="{{ user.email }}">
 				<span class="help-block">We will send all official KRUI correspondence to this address. You are responsible for checking it reguarly, so use one you normally read.</span>
 			</div>
 		</div>
@@ -41,7 +50,7 @@
 		<div class="form-group">
 			<label for="inputPhone" class="col-sm-2 control-label">Phone</label>
 			<div class="col-md-4">
-				<input type="text" class="form-control" id="phone" name="phone">
+				<input type="text" class="form-control" id="phone" name="phone" value="{{ user.get_profile.phone  }}">
 				<span class="help-block">Please, no dashes, spaces, or parentheses! Ex: 3193358970</span>
 			</div>
 		</div>
@@ -49,7 +58,7 @@
 		<div class="form-group">
 			<label for="inputStudentID" class="col-sm-2 control-label">Student ID #</label>
 			<div class="col-md-4">
-				<input type="text" class="form-control" id="studentID" name="student_id" placeholder="12345678">
+				<input type="text" class="form-control" id="studentID" name="student_id" placeholder="12345678" value="{{ user.get_profile.student_id }}">
 			</div>
 						<div class="col-md-offset-2 col-md-10">
 				<div class="checkbox">
@@ -59,12 +68,12 @@
 		</div>
 
 		<div class="form-group">
-			<label for="inputStudentID" class="col-sm-2 control-label">Academic Status</label>
+			<label for="inputStudentID" class="col-sm-2 control-label">University Status</label>
 			<div class="col-md-4">
-				<select class="form-control" name='academic_status'>
-					<option value=-1>Select your academic status...</option>
-					{% for a in academic_status_list %}
-						<option value={{a.0}}>{{a.1}}</option>
+				<select class="form-control" name='university_status'>
+					<option value=-1>Select your university status...</option>
+					{% for a in university_status_list %}
+						<option value="{{a.0}}" {% ifequal user.get_profile.university_status a.0 %}selected="selected"{% endifequal %}>{{a.1}}</option>
 					{% endfor %}
 				</select>
 			</div>

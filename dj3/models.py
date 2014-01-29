@@ -4,6 +4,14 @@ from django.db.models.signals import post_save
 from django.utils import timezone
 from datetime import datetime
 
+# Address records for non-student accounts
+class Address(models.Model):	
+	address_line_1 = models.CharField(max_length=200)
+	address_line_2 = models.CharField(max_length=200, default="", null=True)	# Optional
+	city = models.CharField(max_length=100)
+	state = models.CharField(max_length=2)										# Store only state abbreviations here (IA for Iowa)
+	zipcode = models.CharField(max_length=5)									# We only need five digit zip codes
+
 # A scheduled on-air event is a Program
 class Program(models.Model):
 	name = models.CharField(max_length=50)
@@ -64,26 +72,36 @@ class UserProfile(models.Model):
 	phone = models.CharField(max_length=10, default="", null=True)
 	avatar = models.CharField(max_length=150, blank=True, null=True)
 	created = models.DateTimeField('account created', default=timezone.now())
+	
+	# Address information if this profile is associated with a user who is not a student/affiliated with the university.
+	# Should be NULL if we have a student ID for this user.
+	address = models.ForeignKey(Address, blank=True, null=True)
 
 	# Keep a reference to a user's on-air program if they have one
 	program = models.ForeignKey(Program, blank=True, null=True)
 	
-	# Academic Status Tags
+	# University Status Tags
 	FRESHMAN = 0
 	SOPHOMORE = 1
 	JUNIOR = 2
 	SENIOR = 3
-	OTHER = 4
-	NON_STUDENT = 5
-	ACADEMIC_STATUS_CHOICES = (
+	GRAD_STUDENT = 4
+	OTHER = 5
+	STAFF = 6
+	FACULTY = 7
+	NON_STUDENT = 8
+	UNIVERSITY_STATUS_CHOICES = (
 		(FRESHMAN, 'Freshman'),
 		(SOPHOMORE, 'Sophomore'),
 		(JUNIOR, 'Junior'),
 		(SENIOR, 'Senior'),
+		(GRAD_STUDENT, 'Grad Student'),
 		(OTHER, 'Other'),
 		(NON_STUDENT, 'Non-student'),
+		(STAFF, 'Staff'),
+		(FACULTY, 'Faculty'),
 	)
-	academic_status = models.IntegerField(max_length=1, choices=ACADEMIC_STATUS_CHOICES, default=FRESHMAN, null=True)
+	university_status = models.IntegerField(max_length=1, choices=UNIVERSITY_STATUS_CHOICES, default=FRESHMAN, null=True)
 	
 	# KRUI Director Roles (Non-directors should be set to NULL!)
 	GENERAL_MANAGER = 1
@@ -186,3 +204,5 @@ class SubRequest(models.Model):
 	start_time = models.TimeField('start_time')
 	end_time = models.TimeField('end_time')
 	is_late = models.BooleanField(default=False)
+
+
